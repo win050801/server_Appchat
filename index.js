@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const messageRoutes = require("./routes/messages");
+const roomRoutes = require("./routes/room");
 const app = express();
 const socket = require("socket.io");
 require("dotenv").config();
@@ -24,6 +25,8 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/room/",roomRoutes)
+
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${process.env.PORT}`)
@@ -47,14 +50,26 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-msg", (data) => {
-    // console.log(data);
+    console.log(data.to.length);
     const sendUserSocket = onlineUsers.get(data.to);
-  
     // console.log(sendUserSocket);
     if (sendUserSocket) {
       console.log(data);
-      socket.to(sendUserSocket).emit("msg-recieve", {msg:data.msg,react:data.react,id:data.id});
+      socket.to(sendUserSocket).emit("msg-recieve", {msg:data.msg,react:data.react,id:data.id,namesend:data.namesend,avatarImage:data.avatarImage});
   
+    }
+    if(data.to.length>2)
+    {
+      for(let i = 0 ; i < data.to.length;i++)
+      {
+        const sendUserSocket = onlineUsers.get(data.to[i]);
+    // console.log(sendUserSocket);
+        if (sendUserSocket) {
+          console.log(data);
+          socket.to(sendUserSocket).emit("msg-recieve", {msg:data.msg,react:data.react,id:data.id,namesend:data.namesend,avatarImage:data.avatarImage});
+      
+        }
+      }
     }
   });
   

@@ -18,7 +18,36 @@ module.exports.getMessages = async (req, res, next) => {
         fromSelf: msg.sender.toString() === from,
         message: msg.message.text,
         createdAt:msg.createdAt,
-        reaction:msg.message.reaction
+        reaction:msg.message.reaction,
+        avatarImage:msg.avatarImage
+      };
+    });
+    res.json(projectedMessages);
+  } catch (ex) {
+    next(ex);
+  }
+};
+module.exports.getMessagesRoom = async (req, res, next) => {
+  // console.log("get MSG");
+  try {
+    const { id,from } = req.body;
+   
+    const messages = await Messages.find({
+      users: {
+        $all: [id],
+      },
+    }).sort({ createdAt: 1 });
+
+    const projectedMessages = messages.map((msg) => {
+      
+      return {
+        id:msg._id,
+        fromSelf: msg.sender.toString()===from,
+        message: msg.message.text,
+        createdAt:msg.createdAt,
+        reaction:msg.message.reaction,
+        namesend:msg.namesend,
+        avatarImage:msg.avatarImage
       };
     });
     res.json(projectedMessages);
@@ -30,11 +59,13 @@ module.exports.getMessages = async (req, res, next) => {
 module.exports.addMessage = async (req, res, next) => {
   
   try {
-    const { from, to, message } = req.body;
+    const { from, to, message,namesend ,avatarImage} = req.body;
     const data = await Messages.create({
       message: { text: message,reaction:"" },
       users: [from, to],
       sender: from,
+      namesend:namesend,
+      avatarImage:avatarImage
     });
     // console.log(data._id);
 
@@ -44,6 +75,7 @@ module.exports.addMessage = async (req, res, next) => {
     next(ex);
   }
 };
+
 
 module.exports.addreaction = async (req, res, next) => {
   const { id, reaction } = req.body;

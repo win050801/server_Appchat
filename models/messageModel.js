@@ -12,6 +12,14 @@ const MessageSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    namesend:{
+      type:String,
+      default:""
+    },
+    avatarImage:{
+      type:String,
+      default:""
+    }
   },
   {
     timestamps: true,
