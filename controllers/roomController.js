@@ -34,7 +34,7 @@ module.exports.getRoom = async (req, res, next) => {
           roomName:room.roomName,
           members: room.members,
           createdAt:room.createdAt,
-         
+          blockChat:room.blockChat
         };
       });
       res.json(projectedMessages);
@@ -56,6 +56,61 @@ module.exports.getRoom = async (req, res, next) => {
       console.log(id);
       return res.json({
         mess: "Them Thanh Cong",
+      });
+    } catch (ex) {
+      next(ex);
+    }
+  };
+  module.exports.updateManager = async (req, res, next) => {
+    try {
+      const {id,idManager} = req.body
+      const respon = await Room.findByIdAndUpdate(
+        id,
+        {
+          manager: idManager,
+        },
+        { new: true }
+      );
+      // console.log(id);
+      return res.json({
+        mess: "update thanh cong",
+      });
+    } catch (ex) {
+      next(ex);
+    }
+  };
+  module.exports.renameRoom = async (req, res, next) => {
+    try {
+      const {id,roomName} = req.body
+      const respon = await Room.findByIdAndUpdate(
+        id,
+        {
+          roomName: roomName,
+        },
+        { new: true }
+      );
+      // console.log(id);
+      return res.json({
+        mess: "update thanh cong",
+      });
+    } catch (ex) {
+      next(ex);
+    }
+  };
+  module.exports.blockChat = async (req, res, next) => {
+    try {
+      const {id,blocks} = req.body
+  
+      const respon = await Room.findByIdAndUpdate(
+        id,
+        {
+          blockChat: blocks,
+        },
+        { new: true }
+      );
+      // console.log(id);
+      return res.json({
+        mess: "update thanh cong",
       });
     } catch (ex) {
       next(ex);
